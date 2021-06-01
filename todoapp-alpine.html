@@ -1,0 +1,64 @@
+<html>
+ <head>
+   <title>Todo app - Alpinejs</title>
+   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+   <style>
+     .strike{
+      text-decoration: line-through;
+     }
+   </style>
+ </head>
+  <script>
+  	const dataObject = {
+    	newItemName:'',
+    	items:[],
+      showChecked: false,
+      addItem:function(){
+      	if(!this.newItemName) return;
+      	this.items.push({ id:Math.round(Math.random()*1000), name:this.newItemName, checked:false })
+        this.newItemName = '';
+      },
+
+      deleteItem:function(id){
+      	for(let i=0;i<this.items.length;i++){
+        	if(this.items[i].id === id) {this.items.splice(i,1); break;}
+        }
+      },
+      
+      checkItem:function(id){
+        for(let i=0;i<this.items.length;i++){
+        	if(this.items[i].id === id) {this.items[i].checked = !this.items[i].checked; break;}
+        }
+      }
+    }
+  </script>
+  <body x-data="dataObject">
+
+    <div>
+      <input type="text" placeholder="Enter item name" x-model="newItemName"/>
+      <button @click="addItem()">Add</button>
+    </div>
+
+    <div>
+      <ul>
+        <template x-for="data in items">
+          <li>
+            <input type="checkbox" @change="checkItem(data.id)" :checked="data.checked" />
+            <span x-text="data.name" :class="{'strike':data.checked}"></span>
+            <button @click="deleteItem(data.id)">Delete</button>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+    <button @click="showChecked = !showChecked" x-text="showChecked?'hide checked':'show checked'"></button>
+    <div x-show.transition.in	="showChecked">
+      <ul>
+        <template x-for="data in items.filter(d=>d.checked)">
+          <li x-text="data.name"></li>
+        </template>
+      </ul>
+    </div>
+
+  </body>
+</html>
